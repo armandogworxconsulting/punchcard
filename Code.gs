@@ -19,16 +19,8 @@
 //       const SCRIPT_URL = 'YOUR_GOOGLE_APPS_SCRIPT_URL_HERE';
 // ============================================================
 
-/**
- * Handles HTTP POST requests from the HTML form.
- * Appends a new row to the active sheet with the submitted data.
- *
- * @param {Object} e - The event object from the POST request.
- * @returns {ContentService.TextOutput} JSON response indicating success or failure.
- */
 function doPost(e) {
   try {
-    // Get the active spreadsheet and first sheet
     var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
 
     // ── Ensure header row exists ─────────────────────────────────────────────
@@ -42,24 +34,34 @@ function doPost(e) {
         'Work Type',
         'Notes'
       ]);
-
-      // Style the header row
       var headerRange = sheet.getRange(1, 1, 1, 7);
       headerRange.setFontWeight('bold');
       headerRange.setBackground('#1a1a1a');
       headerRange.setFontColor('#f5f0e8');
     }
 
-    // ── Extract parameters from the POST body ────────────────────────────────
-    var params = e.parameter;
+    // ── Parse URL-encoded body (sent via no-cors fetch) ──────────────────────
+    var params = {};
+    if (e.postData && e.postData.contents) {
+      e.postData.contents.split('&').forEach(function(pair) {
+        var parts = pair.split('=');
+        var key   = decodeURIComponent(parts[0] || '');
+        var value = decodeURIComponent((parts[1] || '').replace(/\+/g, ' '));
+        params[key] = value;
+      });
+    } else {
+      // Fallback: try e.parameter (standard form POST)
+      params = e.parameter || {};
+    }
 
-    var submissionTimestamp = new Date();                    // Column A: server timestamp
-    var name      = params.name      || '';                  // Column B
-    var project   = params.project   || '';                  // Column C
-    var dateWorked = params.dateWorked || '';                 // Column D
-    var hours     = parseFloat(params.hours) || 0;           // Column E
-    var workType  = params.workType  || '';                  // Column F
-    var notes     = params.notes     || '';                  // Column G
+    // ── Extract fields ───────────────────────────────────────────────────────
+    var submissionTimestamp = new Date();
+    var name       = params.name       || '';
+    var project    = params.project    || '';
+    var dateWorked = params.dateWorked || '';
+    var hours      = parseFloat(params.hours) || 0;
+    var workType   = params.workType   || '';
+    var notes      = params.notes      || '';
 
     // ── Append the new data row ──────────────────────────────────────────────
     sheet.appendRow([
@@ -74,19 +76,12 @@ function doPost(e) {
 
     // ── Auto-format the new row ──────────────────────────────────────────────
     var lastRow = sheet.getLastRow();
-
-    // Format the timestamp column (A) as a readable datetime
     sheet.getRange(lastRow, 1).setNumberFormat('MMM d, yyyy h:mm am/pm');
-
-    // Format the hours column (E) as a number with 2 decimal places
     sheet.getRange(lastRow, 5).setNumberFormat('0.00');
 
-    // Alternate row shading for readability
     if (lastRow % 2 === 0) {
       sheet.getRange(lastRow, 1, 1, 7).setBackground('#faf7f0');
     }
-
-    // Auto-resize columns to fit content (runs occasionally to avoid slowdowns)
     if (lastRow % 10 === 0) {
       sheet.autoResizeColumns(1, 7);
     }
@@ -101,7 +96,6 @@ function doPost(e) {
       .setMimeType(ContentService.MimeType.JSON);
 
   } catch (error) {
-    // ── Return error response ────────────────────────────────────────────────
     return ContentService
       .createTextOutput(JSON.stringify({
         status: 'error',
@@ -111,10 +105,8 @@ function doPost(e) {
   }
 }
 
-
 /**
- * doGet() — Optional: handles GET requests so the script URL
- * can be tested directly in a browser tab.
+ * doGet() — lets you test the script URL directly in a browser tab.
  */
 function doGet(e) {
   return ContentService
