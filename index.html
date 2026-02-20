@@ -24,7 +24,7 @@
     color: var(--ink);
     min-height: 100vh;
     padding: 2rem 1rem 4rem;
-    background-image: 
+    background-image:
       repeating-linear-gradient(
         0deg,
         transparent,
@@ -43,18 +43,16 @@
     background: var(--card);
     border: 1px solid var(--rule);
     border-radius: 2px;
-    box-shadow: 
+    box-shadow:
       4px 4px 0 #d4c9b0,
       8px 8px 0 rgba(212,201,176,0.4);
     overflow: hidden;
   }
 
-  /* Punch holes */
   .punch-strip {
     background: var(--rule);
     padding: 10px 0;
     display: flex;
-    gap: 0;
     justify-content: space-around;
     align-items: center;
     border-bottom: 2px solid #c4b99a;
@@ -96,9 +94,7 @@
     color: var(--ink);
   }
 
-  h1 span {
-    color: var(--accent);
-  }
+  h1 span { color: var(--accent); }
 
   .subtitle {
     margin-top: 0.4rem;
@@ -132,10 +128,7 @@
     gap: 0.4rem;
   }
 
-  label .req {
-    color: var(--accent);
-    font-size: 0.9em;
-  }
+  label .req { color: var(--accent); font-size: 0.9em; }
 
   input, textarea {
     width: 100%;
@@ -153,9 +146,7 @@
     border-radius: 0;
   }
 
-  input:focus, textarea:focus {
-    border-bottom-color: var(--ink);
-  }
+  input:focus, textarea:focus { border-bottom-color: var(--ink); }
 
   input::placeholder, textarea::placeholder {
     color: #c4b99a;
@@ -168,9 +159,7 @@
     line-height: 1.6;
   }
 
-  input[type="number"] {
-    font-variant-numeric: tabular-nums;
-  }
+  input[type="number"] { font-variant-numeric: tabular-nums; }
 
   .divider {
     border: none;
@@ -191,22 +180,11 @@
     text-transform: uppercase;
     cursor: pointer;
     transition: background 0.2s, transform 0.1s;
-    position: relative;
-    overflow: hidden;
   }
 
-  .submit-btn:hover {
-    background: var(--accent);
-  }
-
-  .submit-btn:active {
-    transform: scale(0.99);
-  }
-
-  .submit-btn:disabled {
-    background: var(--muted);
-    cursor: not-allowed;
-  }
+  .submit-btn:hover { background: var(--accent); }
+  .submit-btn:active { transform: scale(0.99); }
+  .submit-btn:disabled { background: var(--muted); cursor: not-allowed; }
 
   #status {
     text-align: center;
@@ -218,19 +196,9 @@
     transition: all 0.3s;
   }
 
-  #status.loading {
-    color: var(--muted);
-  }
-
-  #status.success {
-    background: var(--success);
-    color: white;
-  }
-
-  #status.error {
-    background: var(--accent);
-    color: white;
-  }
+  #status.loading { color: var(--muted); }
+  #status.success { background: var(--success); color: white; }
+  #status.error   { background: var(--accent); color: white; }
 
   .footer-strip {
     background: var(--rule);
@@ -255,7 +223,6 @@
     .footer-strip { padding: 8px 1.25rem; }
   }
 
-  /* Loading dots animation */
   @keyframes dot-pulse {
     0%, 80%, 100% { opacity: 0; }
     40% { opacity: 1; }
@@ -328,7 +295,7 @@
     </form>
 
     <div class="footer-strip">
-      <span>FORM REV. 1.0</span>
+      <span>FORM REV. 2.0</span>
       <span id="todayDate"></span>
     </div>
 
@@ -336,22 +303,19 @@
 </div>
 
 <script>
-  // ─── CONFIG ───────────────────────────────────────────────────────────────
-  // Paste your deployed Google Apps Script Web App URL here:
+  // ─── PASTE YOUR GOOGLE APPS SCRIPT WEB APP URL BELOW ─────────────────────
   const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx_jT79FVGRmBTDf2NzzP22VWmIcdLm06fuFvJ-Oi6lFcAp9AdO5MhenGUWdt6Spt2k/exec';
-  // ──────────────────────────────────────────────────────────────────────────
+  // ─────────────────────────────────────────────────────────────────────────
 
-  // Show today's date in footer
   document.getElementById('todayDate').textContent = new Date().toLocaleDateString('en-US', {
     month: 'short', day: 'numeric', year: 'numeric'
   }).toUpperCase();
 
-  // Set today as default date
   const dateInput = document.querySelector('input[name="dateWorked"]');
   dateInput.value = new Date().toISOString().split('T')[0];
 
-  const form = document.getElementById('punchForm');
-  const statusEl = document.getElementById('status');
+  const form      = document.getElementById('punchForm');
+  const statusEl  = document.getElementById('status');
   const submitBtn = document.getElementById('submitBtn');
 
   function setStatus(type, msg) {
@@ -379,29 +343,34 @@
       return;
     }
 
-    // Gather form data
-    const data = new FormData(form);
-
-    // Show loading
     submitBtn.disabled = true;
     submitBtn.textContent = 'Sending…';
     setStatus('loading', 'Sending<span class="dots"><span>.</span><span>.</span><span>.</span></span>');
 
+    // Build URL-encoded string (required for no-cors mode)
+    const params = new URLSearchParams({
+      name:       form.querySelector('[name="name"]').value,
+      project:    form.querySelector('[name="project"]').value,
+      dateWorked: form.querySelector('[name="dateWorked"]').value,
+      hours:      form.querySelector('[name="hours"]').value,
+      workType:   form.querySelector('[name="workType"]').value,
+      notes:      form.querySelector('[name="notes"]').value,
+    });
+
     try {
-      const response = await fetch(SCRIPT_URL, {
+      // no-cors mode bypasses CORS restrictions.
+      // We can't read the response body, so we assume success if no network error occurs.
+      await fetch(SCRIPT_URL, {
         method: 'POST',
-        body: data
+        mode:   'no-cors',
+        headers: { 'Content-Type': 'text/plain' },
+        body:   params.toString()
       });
 
-      const result = await response.json();
+      setStatus('success', '✔ &nbsp; Punch card submitted successfully!');
+      form.reset();
+      dateInput.value = new Date().toISOString().split('T')[0];
 
-      if (result.status === 'success') {
-        setStatus('success', '✔ &nbsp; Punch card submitted successfully!');
-        form.reset();
-        dateInput.value = new Date().toISOString().split('T')[0]; // reset date to today
-      } else {
-        throw new Error(result.message || 'Unknown error');
-      }
     } catch (err) {
       setStatus('error', '✖ &nbsp; Submission failed. Please try again.');
       console.error(err);
@@ -411,7 +380,7 @@
     }
   });
 
-  // Clear field error highlight on input
+  // Clear red highlight on field edit
   form.querySelectorAll('input, textarea').forEach(field => {
     field.addEventListener('input', () => {
       field.style.borderBottomColor = '';
