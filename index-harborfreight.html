@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Work Punch Card</title>
+<link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Oswald:wght@400;500;600;700&family=Source+Sans+3:wght@300;400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles-harborfreight.css">
+</head>
+<body>
+
+<div class="container">
+  <div class="card">
+
+    <div class="punch-strip">
+      <div class="hole"></div><div class="hole"></div><div class="hole"></div>
+      <div class="hole"></div><div class="hole"></div><div class="hole"></div>
+      <div class="hole"></div><div class="hole"></div><div class="hole"></div>
+      <div class="hole"></div><div class="hole"></div><div class="hole"></div>
+    </div>
+
+    <div class="card-header">
+      <div class="badge">Employee Record</div>
+      <h1>Work<br><span>Punch</span> Card</h1>
+      <p class="subtitle">Fill out the form below to log your hours.</p>
+    </div>
+
+    <form id="punchForm">
+
+      <div class="field">
+        <label>Name <span class="req">*</span></label>
+        <input type="text" name="name" placeholder="Your full name" required autocomplete="name">
+      </div>
+
+      <div class="field">
+        <label>Project <span class="req">*</span></label>
+        <input type="text" name="project" placeholder="Project or client name" required>
+      </div>
+
+      <hr class="divider">
+
+      <div class="field">
+        <label>Date Worked <span class="req">*</span></label>
+        <input type="date" name="dateWorked" required>
+      </div>
+
+      <div class="field">
+        <label>Hours <span class="req">*</span></label>
+        <input type="number" name="hours" placeholder="0.00" min="0.25" max="24" step="0.25" required>
+      </div>
+
+      <div class="field">
+        <label>Work Type <span class="req">*</span></label>
+        <input type="text" name="workType" placeholder="e.g. Design, Development, Meeting" required>
+      </div>
+
+      <hr class="divider">
+
+      <div class="field">
+        <label>Notes</label>
+        <textarea name="notes" placeholder="Any additional context or details…"></textarea>
+      </div>
+
+      <div id="status"></div>
+
+      <button type="submit" class="submit-btn" id="submitBtn">
+        ▶ &nbsp; Submit Punch Card
+      </button>
+
+    </form>
+
+    <div class="footer-strip">
+      <span>FORM REV. 2.0</span>
+      <span id="todayDate"></span>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  // ─── PASTE YOUR GOOGLE APPS SCRIPT WEB APP URL BELOW ─────────────────────
+  const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxW0Q_TJHC3O7cmFmEfyNtarXTJp5yRdCXM0C9c8JWRgDAsshbEYK2M2N6U0SiZby0E/exec';
+  // ─────────────────────────────────────────────────────────────────────────
+
+  document.getElementById('todayDate').textContent = new Date().toLocaleDateString('en-US', {
+    month: 'short', day: 'numeric', year: 'numeric'
+  }).toUpperCase();
+
+  const dateInput = document.querySelector('input[name="dateWorked"]');
+  dateInput.value = new Date().toISOString().split('T')[0];
+
+  const form      = document.getElementById('punchForm');
+  const statusEl  = document.getElementById('status');
+  const submitBtn = document.getElementById('submitBtn');
+
+  function setStatus(type, msg) {
+    statusEl.className = type;
+    statusEl.innerHTML = msg;
+  }
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    // Validate required fields
+    const required = form.querySelectorAll('[required]');
+    let valid = true;
+    required.forEach(field => {
+      if (!field.value.trim()) {
+        field.style.borderColor = 'var(--hf-red)';
+        field.style.borderLeftColor = 'var(--hf-red)';
+        valid = false;
+      } else {
+        field.style.borderColor = '';
+        field.style.borderLeftColor = '';
+      }
+    });
+
+    if (!valid) {
+      setStatus('error', '✖ &nbsp; Please fill in all required fields.');
+      return;
+    }
+
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Sending…';
+    setStatus('loading', 'Sending<span class="dots"><span>.</span><span>.</span><span>.</span></span>');
+
+    // Build URL-encoded string (required for no-cors mode)
+    const params = new URLSearchParams({
+      name:       form.querySelector('[name="name"]').value,
+      project:    form.querySelector('[name="project"]').value,
+      dateWorked: form.querySelector('[name="dateWorked"]').value,
+      hours:      form.querySelector('[name="hours"]').value,
+      workType:   form.querySelector('[name="workType"]').value,
+      notes:      form.querySelector('[name="notes"]').value,
+    });
+
+    try {
+      // no-cors mode bypasses CORS restrictions.
+      // We can't read the response body, so we assume success if no network error occurs.
+      await fetch(SCRIPT_URL, {
+        method: 'POST',
+        mode:   'no-cors',
+        headers: { 'Content-Type': 'text/plain' },
+        body:   params.toString()
+      });
+
+      setStatus('success', '✔ &nbsp; Punch card submitted successfully!');
+      form.reset();
+      dateInput.value = new Date().toISOString().split('T')[0];
+
+    } catch (err) {
+      setStatus('error', '✖ &nbsp; Submission failed. Please try again.');
+      console.error(err);
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.innerHTML = '▶ &nbsp; Submit Punch Card';
+    }
+  });
+
+  // Clear error highlight on field edit
+  form.querySelectorAll('input, textarea').forEach(field => {
+    field.addEventListener('input', () => {
+      field.style.borderColor = '';
+      field.style.borderLeftColor = '';
+    });
+  });
+</script>
+
+</body>
+</html>
