@@ -1,0 +1,400 @@
+/* ============================================================
+   LOWE'S–INSPIRED STYLESHEET — Work Punch Card
+   Deep cobalt blue, crisp white, clean professional utility
+   ============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@300;400;600;700;800;900&family=Fjalla+One&display=swap');
+
+/* ── CSS Variables ── */
+:root {
+  --lw-blue:        #004990;
+  --lw-blue-mid:    #005DAA;
+  --lw-blue-light:  #0071CE;
+  --lw-blue-pale:   #E8F0FA;
+  --lw-blue-glow:   rgba(0, 93, 170, 0.12);
+  --lw-red:         #CC2529;
+  --lw-red-dark:    #A81E21;
+  --lw-black:       #111111;
+  --lw-dark:        #333333;
+  --lw-mid:         #555555;
+  --lw-steel:       #777777;
+  --lw-rule:        #CCCCCC;
+  --lw-rule-light:  #E5E9F0;
+  --lw-surface:     #F0F4FA;
+  --lw-white:       #FFFFFF;
+  --lw-success:     #1A7A3C;
+  --lw-error:       #CC2529;
+
+  --font-display: 'Fjalla One', sans-serif;
+  --font-body:    'Nunito Sans', sans-serif;
+
+  --radius-sm:  4px;
+  --radius-md:  8px;
+  --radius-btn: 6px;
+
+  --shadow-card: 0 4px 20px rgba(0, 73, 144, 0.10), 0 1px 4px rgba(0,0,0,0.07);
+  --shadow-btn:  0 3px 0 #003870;
+  --transition:  0.2s ease;
+}
+
+/* ── Reset ── */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* ── Page ── */
+body {
+  font-family: var(--font-body);
+  background-color: var(--lw-surface);
+  color: var(--lw-black);
+  min-height: 100vh;
+  padding: 2.5rem 1rem 5rem;
+
+  /* Subtle blueprint dot grid */
+  background-image: radial-gradient(circle, rgba(0, 93, 170, 0.12) 1px, transparent 1px);
+  background-size: 28px 28px;
+}
+
+/* ── Layout ── */
+.container {
+  max-width: 580px;
+  margin: 0 auto;
+}
+
+/* ── Card ── */
+.card {
+  background: var(--lw-white);
+  border: 1px solid var(--lw-rule-light);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-card);
+  overflow: hidden;
+  animation: card-rise 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* ── Punch Strip ── */
+.punch-strip {
+  background: linear-gradient(135deg, var(--lw-blue) 0%, var(--lw-blue-mid) 100%);
+  padding: 10px 0;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+}
+
+.hole {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--lw-surface);
+  border: 1.5px solid rgba(255,255,255,0.25);
+  box-shadow:
+    inset 0 1px 3px rgba(0,0,0,0.3),
+    0 1px 0 rgba(255,255,255,0.15);
+}
+
+/* ── Card Header ── */
+.card-header {
+  padding: 2rem 2.25rem 1.75rem;
+  background: linear-gradient(160deg, var(--lw-blue) 0%, var(--lw-blue-mid) 100%);
+  color: var(--lw-white);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Geometric arc accent */
+.card-header::before {
+  content: '';
+  position: absolute;
+  bottom: -60px;
+  right: -60px;
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  border: 30px solid rgba(255,255,255,0.06);
+  pointer-events: none;
+}
+
+.card-header::after {
+  content: '';
+  position: absolute;
+  top: -30px;
+  right: 40px;
+  width: 110px;
+  height: 110px;
+  border-radius: 50%;
+  border: 20px solid rgba(255,255,255,0.04);
+  pointer-events: none;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255,255,255,0.15);
+  color: var(--lw-white);
+  font-family: var(--font-body);
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  padding: 4px 10px;
+  border-radius: 20px;
+  border: 1px solid rgba(255,255,255,0.25);
+  margin-bottom: 1rem;
+  backdrop-filter: blur(4px);
+}
+
+.badge::before {
+  content: '⬡';
+  font-size: 0.75em;
+  opacity: 0.7;
+}
+
+h1 {
+  font-family: var(--font-display);
+  font-size: 2.5rem;
+  font-weight: 400; /* Fjalla One is inherently bold */
+  line-height: 1.0;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--lw-white);
+}
+
+h1 span {
+  color: #7EC8F0; /* Lowe's sky-blue accent on dark */
+  display: block;
+}
+
+.subtitle {
+  margin-top: 0.6rem;
+  font-size: 0.875rem;
+  font-weight: 400;
+  color: rgba(255,255,255,0.72);
+  letter-spacing: 0.01em;
+}
+
+/* ── Form ── */
+form {
+  padding: 2rem 2.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+label {
+  font-family: var(--font-body);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--lw-blue);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+label .req {
+  color: var(--lw-red);
+  font-size: 1.1em;
+}
+
+input,
+textarea {
+  width: 100%;
+  background: var(--lw-surface);
+  border: 1.5px solid var(--lw-rule);
+  border-radius: var(--radius-sm);
+  padding: 0.65rem 0.85rem;
+  font-family: var(--font-body);
+  font-size: 0.975rem;
+  font-weight: 600;
+  color: var(--lw-black);
+  outline: none;
+  transition: border-color var(--transition), box-shadow var(--transition), background var(--transition);
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+input:focus,
+textarea:focus {
+  border-color: var(--lw-blue-light);
+  background: var(--lw-white);
+  box-shadow: 0 0 0 3px var(--lw-blue-glow);
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: #AAAAAA;
+  font-weight: 400;
+}
+
+textarea {
+  resize: vertical;
+  min-height: 88px;
+  line-height: 1.65;
+}
+
+input[type="number"] {
+  font-variant-numeric: tabular-nums;
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(20%) sepia(90%) saturate(600%) hue-rotate(195deg) brightness(90%);
+  cursor: pointer;
+}
+
+/* ── Section Divider ── */
+.divider {
+  border: none;
+  height: 2px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    var(--lw-rule-light) 15%,
+    var(--lw-blue-pale) 50%,
+    var(--lw-rule-light) 85%,
+    transparent 100%
+  );
+  margin: 0.2rem 0;
+}
+
+/* ── Status Message ── */
+#status {
+  text-align: center;
+  font-family: var(--font-body);
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  padding: 0.7rem 1rem;
+  min-height: 2.5rem;
+  border-radius: var(--radius-sm);
+  transition: all 0.25s ease;
+}
+
+#status.loading {
+  color: var(--lw-blue);
+  background: var(--lw-blue-pale);
+  border: 1px solid rgba(0, 93, 170, 0.2);
+}
+
+#status.success {
+  background: var(--lw-success);
+  color: var(--lw-white);
+  border-radius: var(--radius-sm);
+}
+
+#status.error {
+  background: var(--lw-error);
+  color: var(--lw-white);
+  border-radius: var(--radius-sm);
+}
+
+/* ── Submit Button ── */
+.submit-btn {
+  width: 100%;
+  padding: 1rem 1.5rem;
+  background: var(--lw-blue);
+  color: var(--lw-white);
+  border: none;
+  border-radius: var(--radius-btn);
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: background var(--transition), transform 0.1s ease, box-shadow var(--transition);
+  box-shadow: var(--shadow-btn);
+}
+
+/* Shimmer sweep */
+.submit-btn::after {
+  content: '';
+  position: absolute;
+  top: 0; left: -80%;
+  width: 55%;
+  height: 100%;
+  background: linear-gradient(
+    120deg,
+    transparent 0%,
+    rgba(255,255,255,0.22) 50%,
+    transparent 100%
+  );
+  transition: left 0.45s ease;
+  pointer-events: none;
+}
+
+.submit-btn:hover {
+  background: var(--lw-blue-light);
+  box-shadow: 0 3px 0 #004A8A;
+}
+
+.submit-btn:hover::after {
+  left: 120%;
+}
+
+.submit-btn:active {
+  transform: translateY(2px);
+  box-shadow: none;
+}
+
+.submit-btn:disabled {
+  background: var(--lw-steel);
+  box-shadow: none;
+  cursor: not-allowed;
+}
+
+/* ── Footer Strip ── */
+.footer-strip {
+  background: var(--lw-blue);
+  padding: 10px 2.25rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.footer-strip span {
+  font-family: var(--font-body);
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.5);
+}
+
+.footer-strip span:first-child {
+  color: #7EC8F0;
+}
+
+/* ── Loading Dots ── */
+@keyframes dot-pulse {
+  0%, 80%, 100% { opacity: 0; }
+  40%           { opacity: 1; }
+}
+
+.dots span { animation: dot-pulse 1.4s infinite; }
+.dots span:nth-child(2) { animation-delay: 0.2s; }
+.dots span:nth-child(3) { animation-delay: 0.4s; }
+
+/* ── Card Entry Animation ── */
+@keyframes card-rise {
+  from { opacity: 0; transform: translateY(22px) scale(0.99); }
+  to   { opacity: 1; transform: translateY(0)   scale(1); }
+}
+
+/* ── Responsive ── */
+@media (max-width: 420px) {
+  body          { padding: 1rem 0.75rem 3rem; }
+  form          { padding: 1.5rem 1.25rem; }
+  .card-header  { padding: 1.5rem 1.25rem 1.5rem; }
+  .footer-strip { padding: 10px 1.25rem; }
+  h1            { font-size: 2rem; }
+}
